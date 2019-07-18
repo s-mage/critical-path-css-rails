@@ -19,13 +19,14 @@ module CriticalPathCss
       end
 
       def format_css_paths
-        config['css_paths'] = [config['css_path']] if config['css_path']
+        config['css_paths'] ||=
+          if config['css_path']
+            [config['css_path']]
+          elsif config['manifest_name']
+            [ActionController::Base.helpers.stylesheet_path(config['manifest_name'], host: '')]
+          end
 
-        if config['css_paths']
-          config['css_paths'].map! { |path| format_path(path) }
-        else
-          config['css_paths'] = [ActionController::Base.helpers.stylesheet_path(config['manifest_name'], host: '')]
-        end
+        config['css_paths'].map! { |path| format_path(path) }
       end
 
       def format_path(path)

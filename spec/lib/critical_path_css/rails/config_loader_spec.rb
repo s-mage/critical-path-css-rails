@@ -6,13 +6,14 @@ RSpec.describe 'ConfigLoader' do
   describe '#load' do
     before do
       allow(File).to receive(:read).and_return(config_file)
+      allow(Rails).to receive(:root).and_return(Pathname.new('/rails_root'))
     end
 
     context 'when single css_path is specified' do
       let(:config_file) { file_fixture('config/single-css-path.yml').read }
 
       it 'sets css_paths with the lone path' do
-        expect(subject.config['css_paths']).to eq ['/app/spec/internal/public/test.css']
+        expect(subject.config['css_paths']).to eq ['/rails_root/public/test.css']
       end
     end
 
@@ -20,7 +21,10 @@ RSpec.describe 'ConfigLoader' do
       let(:config_file) { file_fixture('config/mutliple-css-paths.yml').read }
 
       it 'leaves css_paths to an array of paths' do
-        expect(subject.config['css_paths']).to eq ['/app/spec/internal/public/test.css','/app/spec/internal/public/test2.css']
+        expect(subject.config['css_paths']).to eq([
+          '/rails_root/public/test.css',
+          '/rails_root/public/test2.css'
+        ])
       end
     end
 
@@ -28,7 +32,7 @@ RSpec.describe 'ConfigLoader' do
       let(:config_file) { file_fixture('config/no-paths-specified.yml').read }
 
       it 'sets css_paths with the lone manifest path' do
-        expect(subject.config['css_paths']).to eq ['/stylesheets/application.css']
+        expect(subject.config['css_paths']).to eq ['/rails_root/public/stylesheets/application.css']
       end
     end
 
