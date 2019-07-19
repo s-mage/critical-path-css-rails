@@ -15,6 +15,16 @@ module CriticalPathCss
     end
   end
 
+  def self.generate_to_files
+    fetcher.fetch.each do |route, css|
+      File.open(::Rails.root.join('app', 'views', 'critical_css', (route == '/' ? '_root' : route.gsub('/', '_')) + '.html'), 'w+') do |f|
+        f.write('<style>')
+        f.write(css)
+        f.write('</style>')
+      end
+    end
+  end
+
   def self.clear(route)
     ::Rails.cache.delete(route, namespace: CACHE_NAMESPACE)
   end
